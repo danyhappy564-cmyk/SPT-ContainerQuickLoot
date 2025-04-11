@@ -2,8 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <Version>1.6.0</Version>
-    <Authors> CactusPiereysonk,ArchmageTony,bepis69,ShinCFN</Authors>
+    <Version>1.7.0</Version>
+    <Authors> CactusPiereysonk,ArchmageTony,bepis69,ShinCFN,garlicbreadtcg</Authors>
+    <NuGetAuditMode>direct</NuGetAuditMode>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,37 +15,36 @@
 
   <ItemGroup>
     <Reference Include="spt-reflection">
-      <HintPath>..\..\..\resources\spt-reflection.dll</HintPath>
+      <HintPath>libs\spt-reflection.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\resources\Assembly-CSharp.dll</HintPath>
+      <HintPath>libs\Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Comfort">
-      <HintPath>..\..\..\resources\Comfort.dll</HintPath>
+      <HintPath>libs\Comfort.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Comfort.Unity">
-      <HintPath>..\..\..\resources\Comfort.Unity.dll</HintPath>
+      <HintPath>libs\Comfort.Unity.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ItemComponent.Types">
-      <HintPath>..\..\..\resources\ItemComponent.Types.dll</HintPath>
+      <HintPath>libs\ItemComponent.Types.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\resources\UnityEngine.dll</HintPath>
+      <HintPath>libs\UnityEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\resources\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>libs\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>..\..\..\resources\UnityEngine.InputLegacyModule.dll</HintPath>
+      <HintPath>libs\UnityEngine.InputLegacyModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
-
 </Project>
