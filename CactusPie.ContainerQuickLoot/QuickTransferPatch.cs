@@ -23,7 +23,7 @@ namespace CactusPie.ContainerQuickLoot
 
         [PatchPrefix]
         public static bool PatchPrefix(
-            ref GStruct455<GInterface385> __result,
+            ref GStruct455<GInterface398> __result,
             object __instance,
             Item item,
             TraderControllerClass controller,
