@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace CactusPie.ContainerQuickLoot
 {
-    [BepInPlugin("com.cactuspie.containerquikloot", "CactusPie.ContainerQuickLoot", "1.7.0")]
+    [BepInPlugin("com.cactuspie.containerquickloot", "CactusPie.ContainerQuickLoot", "1.8.0")]
     public class ContainerQuickLootPlugin : BaseUnityPlugin
     {
         internal static ConfigEntry<bool> EnableForCtrlClick { get; set; }

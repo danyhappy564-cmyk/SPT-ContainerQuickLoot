@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using SPT.Reflection.Patching;
 using Comfort.Common;
 using EFT;
 using EFT.InventoryLogic;
-using System.CodeDom;
-using System.ComponentModel;
+using SPT.Reflection.Patching;
 
 namespace CactusPie.ContainerQuickLoot
 {
@@ -23,7 +21,7 @@ namespace CactusPie.ContainerQuickLoot
 
         [PatchPrefix]
         public static bool PatchPrefix(
-            ref GStruct455<GInterface398> __result,
+            ref GStruct154<GInterface424> __result,
             object __instance,
             Item item,
             TraderControllerClass controller,
@@ -99,8 +97,8 @@ namespace CactusPie.ContainerQuickLoot
                             continue;
                         }
 
-                        GStruct455<GClass3209> mergeResult = InteractionsHandlerClass.Merge(item, containedItem.Key, controller, simulate);
-                        __result = new GStruct455<GInterface398>(mergeResult.Value);
+                        GStruct154<GClass3417> mergeResult = InteractionsHandlerClass.Merge(item, containedItem.Key, controller, simulate);
+                        __result = new GStruct154<GInterface424>(mergeResult.Value);
                         return false;
                     }
                 }
@@ -111,7 +109,7 @@ namespace CactusPie.ContainerQuickLoot
                     continue;
                 }
 
-                GStruct455<GClass3203> moveResult = InteractionsHandlerClass.Move(item, location, controller, simulate);
+                GStruct154<GClass3411> moveResult = InteractionsHandlerClass.Move(item, location, controller, simulate);
                 if (moveResult.Failed)
                 {
                     return true;
@@ -119,7 +117,7 @@ namespace CactusPie.ContainerQuickLoot
 
                 if (!moveResult.Value.ItemsDestroyRequired)
                 {
-                    __result = moveResult.Cast<GClass3203, GInterface398>();
+                    __result = moveResult.Cast<GClass3411, GInterface424>();
                 }
 
                 return false;
@@ -158,7 +156,7 @@ namespace CactusPie.ContainerQuickLoot
 
         private static IEnumerable<EFT.InventoryLogic.IContainer> FindTargetContainers(Item item, Inventory inventory)
         {
-            var matchingContainerCollections = new List<(GClass3050 containerCollection, int priority)>();
+            var matchingContainerCollections = new List<(GClass3248 containerCollection, int priority)>();
 
             string tag = ContainerQuickLootPlugin.CustomizeTagForLootContainers.Value.ToString();
             Regex lootTagRegex = new Regex
@@ -191,7 +189,7 @@ namespace CactusPie.ContainerQuickLoot
                 }
 
                 // We check if any of the containers in the collection can hold our item
-                var containerCollection = inventoryItem as GClass3050;
+                var containerCollection = inventoryItem as GClass3248;
 
                 if (containerCollection == null || !containerCollection.Containers.Any(container => container.CanAccept(item)))
                 {
@@ -221,7 +219,7 @@ namespace CactusPie.ContainerQuickLoot
             Inventory inventory,
             TraderControllerClass controller,
             bool simulate,
-            ref GStruct455<GInterface398> result)
+            ref GStruct154<GInterface424> result)
         {
             if (!ContainerQuickLootPlugin.AutoMergeStacksForNonLootContainers.Value)
             {
@@ -245,14 +243,14 @@ namespace CactusPie.ContainerQuickLoot
                     continue;
                 }
 
-                GStruct455<GClass3209> mergeResult = InteractionsHandlerClass.Merge(item, targetItem, controller, simulate);
+                GStruct154<GClass3417> mergeResult = InteractionsHandlerClass.Merge(item, targetItem, controller, simulate);
 
                 if (!mergeResult.Succeeded)
                 {
                     return false;
                 }
 
-                result = new GStruct455<GInterface398>(mergeResult.Value);
+                result = new GStruct154<GInterface424>(mergeResult.Value);
                 return true;
             }
 
