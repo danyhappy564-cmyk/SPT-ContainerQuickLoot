@@ -1,50 +1,104 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <Version>1.8.0</Version>
-    <Authors>CactusPiereysonk,ArchmageTony,bepis69,ShinCFN,garlicbreadtcg,diasiledu</Authors>
-    <NuGetAuditMode>direct</NuGetAuditMode>
+    <!-- netstandard2.1, matching SPT 4.1 client plugins. This was net472. -->
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>CactusPie.ContainerQuickLoot</RootNamespace>
+    <AssemblyName>CactusPie.ContainerQuickLoot</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <Version>1.9.0</Version>
+    <Company>CactusPie</Company>
+    <Product>CactusPie.ContainerQuickLoot</Product>
+
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <!--
+    References come from a real SPT install rather than the repository's libs\ folder,
+    which held 4.0 copies. Building against those produced a plugin compiled for types
+    4.1 no longer has, and did so QUIETLY - a 4.0 Assembly-CSharp resolves every name in
+    this project without complaint.
+
+    BepInEx comes from the install too, replacing the BepInEx.Core NuGet package. That
+    package needs nuget.bepinex.dev, so the build failed outright anywhere that feed is
+    unreachable, and the version it pinned had no particular relationship to the BepInEx
+    the game actually loads this plugin into.
+  -->
+  <PropertyGroup>
+    <SptRoot Condition=" '$(SptRoot)' == '' ">E:\SPT 4.1</SptRoot>
+    <SptManaged>$(SptRoot)\EscapeFromTarkov_Data\Managed</SptManaged>
+    <SptBepInEx>$(SptRoot)\BepInEx</SptBepInEx>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BepInEx.Core" Version="5.4.21">
-      <ExcludeAssets>runtime</ExcludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>$(SptBepInEx)\core\0Harmony.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>$(SptBepInEx)\core\BepInEx.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="spt-reflection">
-      <HintPath>libs\spt-reflection.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>$(SptBepInEx)\plugins\spt\spt-reflection.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>libs\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>$(SptManaged)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="Comfort">
-      <HintPath>libs\Comfort.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>$(SptManaged)\Comfort.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="Comfort.Unity">
-      <HintPath>libs\Comfort.Unity.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>$(SptManaged)\Comfort.Unity.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="ItemComponent.Types">
-      <HintPath>libs\ItemComponent.Types.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>$(SptManaged)\ItemComponent.Types.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>libs\UnityEngine.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>$(SptManaged)\UnityEngine.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>libs\UnityEngine.CoreModule.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>$(SptManaged)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
-      <HintPath>libs\UnityEngine.InputLegacyModule.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>$(SptManaged)\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>false</Private>
     </Reference>
   </ItemGroup>
+
+  <Target Name="EnsureSptRoot" BeforeTargets="BeforeBuild;ResolveAssemblyReferences">
+    <Error Condition="!Exists('$(SptManaged)\Assembly-CSharp.dll')"
+           Text="SptRoot '$(SptRoot)' does not look like an SPT install (missing EscapeFromTarkov_Data\Managed\Assembly-CSharp.dll). Pass -p:SptRoot=... or set the SptRoot environment variable." />
+  </Target>
+
+  <Target Name="CopyToSPT" AfterTargets="Build" Condition="Exists('$(SptRoot)')">
+    <MakeDir Directories="$(SptBepInEx)\plugins" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SptBepInEx)\plugins" />
+  </Target>
+
+  <!-- Staging one level down so the archive is never inside what it is archiving. -->
+  <PropertyGroup>
+    <ReleaseDir>$(ProjectDir)..\Release</ReleaseDir>
+    <ReleaseStagingDir>$(ReleaseDir)\staging</ReleaseStagingDir>
+  </PropertyGroup>
+
+  <Target Name="PackageRelease" AfterTargets="CopyToSPT">
+    <RemoveDir Directories="$(ReleaseStagingDir)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ReleaseStagingDir)\BepInEx\plugins" />
+    <ZipDirectory SourceDirectory="$(ReleaseStagingDir)"
+                  DestinationFile="$(ReleaseDir)\CactusPie.ContainerQuickLoot.zip"
+                  Overwrite="true" />
+    <Message Text="Release zip: $(ReleaseDir)\CactusPie.ContainerQuickLoot.zip" Importance="high" />
+  </Target>
+
 </Project>
