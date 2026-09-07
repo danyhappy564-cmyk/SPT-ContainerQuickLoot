@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Comfort.Common;
+using Diz.LanguageExtensions;
 using EFT;
 using EFT.InventoryLogic;
 using SPT.Reflection.Patching;
@@ -15,24 +16,24 @@ namespace CactusPie.ContainerQuickLoot
 
         protected override MethodBase GetTargetMethod()
         {
-            MethodInfo method = typeof(InteractionsHandlerClass).GetMethod("QuickFindAppropriatePlace", BindingFlags.Public | BindingFlags.Static);
+            MethodInfo method = typeof(ItemManipulator).GetMethod("QuickFindAppropriatePlace", BindingFlags.Public | BindingFlags.Static);
             return method;
         }
 
         [PatchPrefix]
         public static bool PatchPrefix(
-            ref GStruct154<GInterface424> __result,
+            ref OperationResult<IItemOperationResult> __result,
             object __instance,
             Item item,
-            TraderControllerClass controller,
+            ItemController controller,
             IEnumerable<CompoundItem> targets,
-            InteractionsHandlerClass.EMoveItemOrder order,
+            ItemManipulator.EMoveItemOrder order,
             bool simulate)
         {
             Inventory inventory;
 
             // If is ctrl+click loot
-            if (order == InteractionsHandlerClass.EMoveItemOrder.MoveToAnotherSide)
+            if (order == ItemManipulator.EMoveItemOrder.MoveToAnotherSide)
             {
                 if (!ContainerQuickLootPlugin.EnableForCtrlClick.Value)
                 {
@@ -40,7 +41,7 @@ namespace CactusPie.ContainerQuickLoot
                 }
             }
             // If is loose loot pick up
-            else if (order == InteractionsHandlerClass.EMoveItemOrder.PickUp && controller.OwnerType == EOwnerType.Profile)
+            else if (order == ItemManipulator.EMoveItemOrder.PickUp && controller.OwnerType == EOwnerType.Profile)
             {
                 if (!ContainerQuickLootPlugin.EnableForLooseLoot.Value)
                 {
@@ -72,7 +73,11 @@ namespace CactusPie.ContainerQuickLoot
 
             foreach (EFT.InventoryLogic.IContainer collectionContainer in targetContainers)
             {
-                if (!(collectionContainer is StashGridClass container))
+                // Fully qualified: 4.1 renamed StashGridClass to the very generic "Grid",
+                // which would become ambiguous the moment anyone adds a using for
+                // UnityEngine (which also has a Grid). The file already qualifies
+                // EFT.InventoryLogic.IContainer below for the same reason.
+                if (!(collectionContainer is EFT.InventoryLogic.Grid container))
                 {
                     return !TryMergeItemIntoAnExistingStack(item, inventory, controller, simulate, ref __result);
                 }
@@ -97,8 +102,8 @@ namespace CactusPie.ContainerQuickLoot
                             continue;
                         }
 
-                        GStruct154<GClass3417> mergeResult = InteractionsHandlerClass.Merge(item, containedItem.Key, controller, simulate);
-                        __result = new GStruct154<GInterface424>(mergeResult.Value);
+                        OperationResult<MergeResult> mergeResult = ItemManipulator.Merge(item, containedItem.Key, controller, simulate);
+                        __result = new OperationResult<IItemOperationResult>(mergeResult.Value);
                         return false;
                     }
                 }
@@ -109,7 +114,7 @@ namespace CactusPie.ContainerQuickLoot
                     continue;
                 }
 
-                GStruct154<GClass3411> moveResult = InteractionsHandlerClass.Move(item, location, controller, simulate);
+                OperationResult<MoveResult> moveResult = ItemManipulator.Move(item, location, controller, simulate);
                 if (moveResult.Failed)
                 {
                     return true;
@@ -117,7 +122,7 @@ namespace CactusPie.ContainerQuickLoot
 
                 if (!moveResult.Value.ItemsDestroyRequired)
                 {
-                    __result = moveResult.Cast<GClass3411, GInterface424>();
+                    __result = moveResult.Cast<MoveResult, IItemOperationResult>();
                 }
 
                 return false;
@@ -156,7 +161,7 @@ namespace CactusPie.ContainerQuickLoot
 
         private static IEnumerable<EFT.InventoryLogic.IContainer> FindTargetContainers(Item item, Inventory inventory)
         {
-            var matchingContainerCollections = new List<(GClass3248 containerCollection, int priority)>();
+            var matchingContainerCollections = new List<(ContainerCollection containerCollection, int priority)>();
 
             string tag = ContainerQuickLootPlugin.CustomizeTagForLootContainers.Value.ToString();
             Regex lootTagRegex = new Regex
@@ -189,7 +194,7 @@ namespace CactusPie.ContainerQuickLoot
                 }
 
                 // We check if any of the containers in the collection can hold our item
-                var containerCollection = inventoryItem as GClass3248;
+                var containerCollection = inventoryItem as ContainerCollection;
 
                 if (containerCollection == null || !containerCollection.Containers.Any(container => container.CanAccept(item)))
                 {
@@ -217,9 +222,9 @@ namespace CactusPie.ContainerQuickLoot
         private static bool TryMergeItemIntoAnExistingStack(
             Item item,
             Inventory inventory,
-            TraderControllerClass controller,
+            ItemController controller,
             bool simulate,
-            ref GStruct154<GInterface424> result)
+            ref OperationResult<IItemOperationResult> result)
         {
             if (!ContainerQuickLootPlugin.AutoMergeStacksForNonLootContainers.Value)
             {
@@ -243,14 +248,14 @@ namespace CactusPie.ContainerQuickLoot
                     continue;
                 }
 
-                GStruct154<GClass3417> mergeResult = InteractionsHandlerClass.Merge(item, targetItem, controller, simulate);
+                OperationResult<MergeResult> mergeResult = ItemManipulator.Merge(item, targetItem, controller, simulate);
 
                 if (!mergeResult.Succeeded)
                 {
                     return false;
                 }
 
-                result = new GStruct154<GInterface424>(mergeResult.Value);
+                result = new OperationResult<IItemOperationResult>(mergeResult.Value);
                 return true;
             }
 
