@@ -94,3 +94,18 @@ dotnet build CactusPie.ContainerQuickLoot.sln
 가 GPL-3.0 이고, 이 저장소는 그 파생물이라 같은 라이선스를 따릅니다. 전문은 `LICENSE` 참고.
 
 재배포하실 때는 GPL-3.0 조건대로 **라이선스 전문과 소스를 같이** 제공해야 합니다.
+
+## ⚠️ 직접 빌드해서 쓰세요
+
+SPT 런처는 플러그인이 참조하는 **`spt-reflection` 어셈블리 버전**을 읽어서 "몇 버전용으로
+빌드됐는지"를 판정하고, 안 맞으면 게임 실행을 막습니다. 그래서 이 모드의 DLL은 **실제 SPT
+설치본에 대고 빌드해야** 합니다.
+
+```
+dotnet build CactusPie.ContainerQuickLoot.sln -c Release
+```
+
+`SptRoot` 기본값이 `E:\SPT 4.1` 이라 그대로 빌드하면 됩니다. 다르면 `-p:SptRoot=...`.
+
+껍데기 `spt-reflection.dll`(버전 1.0.0.0)에 대고 빌드하면 **컴파일은 되고 런처에서만 막히는**
+DLL이 나오기 때문에, 그 경우 빌드가 에러로 멈추도록 해뒀습니다.
