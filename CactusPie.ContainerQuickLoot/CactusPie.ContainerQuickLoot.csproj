@@ -92,9 +92,18 @@
     <ReleaseStagingDir>$(ReleaseDir)\staging</ReleaseStagingDir>
   </PropertyGroup>
 
+  <!--
+    The zip used to contain the dll and nothing else. This mod is GPL-3.0, and that licence
+    requires its text to travel with every copy handed to someone else - so a binary-only
+    archive was not a distributable artefact. LICENSE and NOTICE.txt now ship inside it,
+    NOTICE naming the original author and pointing at the source the GPL obliges us to make
+    available.
+  -->
   <Target Name="PackageRelease" AfterTargets="CopyToSPT">
     <RemoveDir Directories="$(ReleaseStagingDir)" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ReleaseStagingDir)\BepInEx\plugins" />
+    <Copy SourceFiles="$(ProjectDir)..\LICENSE;$(ProjectDir)NOTICE.txt"
+          DestinationFolder="$(ReleaseStagingDir)" />
     <ZipDirectory SourceDirectory="$(ReleaseStagingDir)"
                   DestinationFile="$(ReleaseDir)\CactusPie.ContainerQuickLoot.zip"
                   Overwrite="true" />

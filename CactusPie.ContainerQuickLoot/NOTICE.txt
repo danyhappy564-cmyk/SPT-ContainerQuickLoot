@@ -1,0 +1,19 @@
+CactusPie.ContainerQuickLoot
+============================
+
+Original author : CactusPie
+Original source : https://github.com/CactusPie/SPT-ContainerQuickLoot
+Licence         : GNU General Public License v3.0 (see LICENSE)
+
+This package is a fork, ported to run on SPT 4.1. The functional changes are
+limited to updating client type names that SPT 4.1's deobfuscation renamed, and
+to the build configuration. No behaviour was added or removed.
+
+Fork source     : https://github.com/danyhappy564-cmyk/SPT-ContainerQuickLoot
+
+GPL-3.0 requires that the complete corresponding source code be available to
+anyone who receives this binary. It is published in full at the fork URL above,
+and the licence text travels with this package in LICENSE.
+
+You may redistribute and modify this software under the terms of the GPL-3.0.
+You may not relicense it, nor add restrictions beyond those the licence allows.
