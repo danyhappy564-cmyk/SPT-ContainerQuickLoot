@@ -87,3 +87,10 @@ dotnet build CactusPie.ContainerQuickLoot.sln
 | Merge stacks | 켜짐 |
 | Merge stacks for non-loot containers | 켜짐 |
 | 루팅 컨테이너 태그 키워드 | `@loot` |
+
+## 라이선스
+
+**GPL-3.0.** 원작 [CactusPie/SPT-ContainerQuickLoot](https://github.com/CactusPie/SPT-ContainerQuickLoot)
+가 GPL-3.0 이고, 이 저장소는 그 파생물이라 같은 라이선스를 따릅니다. 전문은 `LICENSE` 참고.
+
+재배포하실 때는 GPL-3.0 조건대로 **라이선스 전문과 소스를 같이** 제공해야 합니다.
